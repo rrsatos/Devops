@@ -24,13 +24,13 @@ jobs:
 
       # Create the app service and vs code webapp
       - run: |
-          group=rg-devops-sura-dgomezg3-dev
-          location=southcentralus
-          plan=plan-devops-sura-dgomezg3-dev
-          app=app-devops-sura-vscode-dgomezg3-dev
+          group=rg-devops-sura-rrsantos-dev
+          location=eastus
+          plan=plan-devops-sura-rrsantos-dev
+          app=app-devops-sura-vscode-rrsantos-dev
           sku=P3V2
           image=bencdr/code-server-azure
-          repo=https://github.com/daniel6omez/devops-course.git
+          repo=https://github.com/rrsatos/Devops.git
           az configure --defaults group=$group location=$location
           az appservice plan create --name $plan --is-linux --sku $sku
           az webapp create --plan $plan --name $app --deployment-container-image-name $image
