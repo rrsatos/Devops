@@ -33,4 +33,4 @@ jobs:
           repo=https://github.com/rrsatos/Devops.git
           az configure --defaults group=$group location=$location
           az appservice plan create --name $plan --location "Central US" --is-linux --sku $sku
-          az webapp create --plan $plan --name $app --deployment-container-image-name $image
+          az webapp create --plan $plan --name --location "Central US" $app --deployment-container-image-name $image
