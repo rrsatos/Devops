@@ -25,7 +25,7 @@ jobs:
       # Create the app service and vs code webapp
       - run: |
           group=rg-devops-sura-rrsantos-dev
-          location=centralus
+          location=southcentralus
           plan=plan-devops-sura-rrsantos-dev
           app=app-devops-sura-vscode-rrsantos-dev
           sku=P3V2
