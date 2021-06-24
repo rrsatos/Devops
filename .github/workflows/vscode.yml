@@ -32,4 +32,3 @@ jobs:
           image=bencdr/code-server-azure
           repo=https://github.com/rrsatos/Devops.git
           az configure --defaults group=$group location=$location
-          az appservice plan create --name $plan --is-linux --sku $sku
