@@ -33,3 +33,8 @@ jobs:
           repo=https://github.com/rrsatos/Devops.git
           az configure --defaults group=$group location=$location
           az appservice plan create --name $plan --location "Central US" --sku F1 --is-linux --sku $sku
+          az webapp create --plan $plan --name $app --deployment-container-image-name $image
+          az webapp config appsettings set --name $app --settings GIT_REPO=$repo PASSWORD=${{ secrets.PASSWORD }} WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
+          creds=($(az webapp deployment list-publishing-profiles --name $app --query "[?contains(publishMethod, 'FTP')].[publishUrl,userName,userPWD]" --output tsv))
+          curl -Q "MKD coder" -u ${creds[1]}:${creds[2]} ${creds[0]}/
+          curl -Q "MKD coder/project" -u ${creds[1]}:${creds[2]} ${creds[0]}/
