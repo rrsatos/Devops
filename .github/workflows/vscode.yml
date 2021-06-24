@@ -31,3 +31,4 @@ jobs:
           sku=P3V2
           image=bencdr/code-server-azure
           repo=https://github.com/rrsatos/Devops.git
+          az configure --defaults group=$group location=$location
