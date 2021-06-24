@@ -38,5 +38,3 @@ jobs:
           creds=($(az webapp deployment list-publishing-profiles --name $app --query "[?contains(publishMethod, 'FTP')].[publishUrl,userName,userPWD]" --output tsv))
           curl -Q "MKD coder" -u ${creds[1]}:${creds[2]} ${creds[0]}/
           curl -Q "MKD coder/project" -u ${creds[1]}:${creds[2]} ${creds[0]}/
-
-
