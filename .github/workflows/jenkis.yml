@@ -1,0 +1,46 @@
+# This is a basic workflow to help you get started with Azure VS Code
+
+name: Jenkins
+
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab. Please run just once
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Login
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Create the app service and jenkins code webapp
+      - run: |
+          group=rg-devops-sura-rrsantos-dev
+          location=westeurope
+          registry=crdevopssurarrsantosdev
+          registry_url=https://crdevopssurarrsantosdev.azurecr.io
+          skuRegistry=Basic
+          plan=plan-devops-sura-rrsantos-dev
+          app=app-devops-sura-jenkins-rrsantos-dev
+          skuPlan=P3V2
+          image=crdevopssurarrsantosdev.azurecr.io/jenkins:latest
+          docker build -f module_5/src/Dockerfile -t $image module_5/src/
+          docker login $registry_url -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD_1 }}
+          docker push $image
+          az configure --defaults group=$group location=$location
+          az webapp create --plan $plan --name $app --deployment-container-image-name $image
+          az webapp config container set --name $app --docker-custom-image-name $image --docker-registry-server-url $registry_url
+          az webapp config appsettings set --name $app --settings WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
+          creds=($(az webapp deployment list-publishing-profiles --name $app --query "[?contains(publishMethod, 'FTP')].[publishUrl,userName,userPWD]" --output tsv))
+          curl -Q "MKD jenkins_home" -u ${creds[1]}:${creds[2]} ${creds[0]}/
