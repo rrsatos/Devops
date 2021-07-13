@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY_PASSWORD_1 = credentials('REGISTRY_PASSWORD_1')
+        group='rg-devops-sura-rrsantos-dev'
+        location='westeurope'
+        registry='crdevopssurarrsantosdev'
+        registry_url='https://crdevopssurarrsantosdev.azurecr.io'
+        skuRegistry='Basic'
+        plan='plan-devops-sura-rrsantos-dev'
+        app='app-devops-sura-starter-rrsantos-dev'
+        image='crdevopssurarrsantosdev.azurecr.io/starter:latest'
+    }
+
+    stages {
+        stage('Build') { 
+            steps {
+                // 
+                echo 'Building'
+                sh 'sudo apt-get update -y'
+                sh 'curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
+                nodejs(nodeJSInstallationName: 'Node 12.22.3') {
+                    sh 'rm -rf fe-devops-sura-rrsantos-dev'
+                    sh 'npx gatsby new fe-devops-sura-rrsantos-dev https://github.com/Evaluates2/Gatsby-Starter-TypeScript-Redux-TDD-BDD'
+                    sh 'npm run build --prefix fe-devops-sura-rrsantos-dev'
+                }
+            }
+        }
+        stage('Test') { 
+            steps {
+                // 
+                echo 'Testing'
+                nodejs(nodeJSInstallationName: 'Node 12.22.3') {
+                    sh 'npm run test-once --prefix fe-devops-sura-rrsantos-dev'
+                    sh 'npm run lint --prefix fe-devops-sura-rrsantos-dev'
+                }
+            }
+        }
+        stage('Deploy') { 
+            steps {
+                // 
+                echo 'Deploying'
+                withCredentials([azureServicePrincipal('bfe46785-e779-4d89-8d58-1901658d22a4')]) {
+                    sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                    sh '''
+cat <<-EOF> fe-devops-sura-rrsantos-dev/Dockerfile
+FROM nginx:stable-alpine
+COPY public /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+EOF'''
+                    sh 'docker build -f fe-devops-sura-rrsantos-dev/Dockerfile -t $image fe-devops-sura-rrsantos-dev'
+                    sh 'docker login $registry_url -u crdevopssurarrsantosdev -p $REGISTRY_PASSWORD_1'
+                    sh 'docker push $image'
+                    sh 'az configure --defaults group=$group location=$location'
+                    sh 'az webapp create --plan $plan --name $app --deployment-container-image-name $image'
+                    sh 'az webapp config container set --name $app --docker-custom-image-name $image --docker-registry-server-url $registry_url'    
+                }
+            }
+        }
+    }
+}
