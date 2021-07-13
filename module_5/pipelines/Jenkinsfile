@@ -41,7 +41,7 @@ pipeline {
             steps {
                 // 
                 echo 'Deploying'
-                withCredentials([azureServicePrincipal('bfe46785-e779-4d89-8d58-1901658d22a4')]) {
+                withCredentials([azureServicePrincipal('3ab55545-69e0-4ad3-93ab-3a557e03f482')]) {
                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                     sh '''
 cat <<-EOF> fe-devops-sura-rrsantos-dev/Dockerfile
