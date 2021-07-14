@@ -14,19 +14,27 @@ pipeline {
     }
 
     stages {
-        stage('Build') { 
+        stage('checkout') { 
             steps {
                 // 
-                echo 'Building'
+                echo 'checkouting'
                 sh 'sudo apt-get update -y'
                 sh 'curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash'
                 nodejs(nodeJSInstallationName: 'Node 12.22.3') {
                     sh 'rm -rf fe-devops-sura-rrsantos-dev'
                     sh 'npx gatsby new fe-devops-sura-rrsantos-dev https://github.com/Evaluates2/Gatsby-Starter-TypeScript-Redux-TDD-BDD'
-                    sh 'npm run build --prefix fe-devops-sura-rrsantos-dev'
                 }
             }
         }
+        stage('Build') { 
+            steps {
+                // 
+                echo 'Building'
+                nodejs(nodeJSInstallationName: 'Node 12.22.3') {
+                    sh 'npm run build --prefix fe-devops-sura-rrsantos-dev'
+                }
+            }
+        }        
         stage('Test') { 
             steps {
                 // 
