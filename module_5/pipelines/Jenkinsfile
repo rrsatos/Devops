@@ -37,10 +37,10 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') { 
+        stage('Delivery') { 
             steps {
                 // 
-                echo 'Deploying'
+                echo 'Deliverying'
                 withCredentials([azureServicePrincipal('3ab55545-69e0-4ad3-93ab-3a557e03f482')]) {
                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                     sh '''
@@ -53,11 +53,17 @@ EOF'''
                     sh 'docker build -f fe-devops-sura-rrsantos-dev/Dockerfile -t $image fe-devops-sura-rrsantos-dev'
                     sh 'docker login $registry_url -u crdevopssurarrsantosdev -p $REGISTRY_PASSWORD_1'
                     sh 'docker push $image'
-                    sh 'az configure --defaults group=$group location=$location'
-                    sh 'az webapp create --plan $plan --name $app --deployment-container-image-name $image'
-                    sh 'az webapp config container set --name $app --docker-custom-image-name $image --docker-registry-server-url $registry_url'    
                 }
             }
         }
+        stage('Deploy') { 
+            steps {
+                // 
+                echo 'Deploying'
+                sh 'az configure --defaults group=$group location=$location'
+                sh 'az webapp create --plan $plan --name $app --deployment-container-image-name $image'
+                sh 'az webapp config container set --name $app --docker-custom-image-name $image --docker-registry-server-url $registry_url'    
+            }
+        }        
     }
 }
