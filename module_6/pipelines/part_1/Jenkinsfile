@@ -10,7 +10,8 @@ pipeline {
         skuRegistry='Basic'
         plan='plan-devops-sura-rrsantos-dev'
         app='app-devops-sura-starter-rrsantos-dev'
-        image='crdevopssurarrsantosdev.azurecr.io/starter:latest'
+        image='crdevopssurarrsantosdev.azurecr.io/starter:latest',
+        ToA = credentials('SonarQubeToA')
     }
 
     stages {
