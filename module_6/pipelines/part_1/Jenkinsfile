@@ -25,8 +25,11 @@ pipeline {
                     sh 'npx gatsby new fe-devops-sura-rrsantos-dev https://github.com/Evaluates2/Gatsby-Starter-TypeScript-Redux-TDD-BDD'
                 }
             }
-        }
-        stage('SonarQube Analysis') {
+       }
+       stage('SCM') {
+         checkout scm
+       }
+       stage('SonarQube Analysis') {
           def scannerHome = tool 'SonarScanner';
           withSonarQubeEnv() {
             sh "${scannerHome}/bin/sonar-scanner"
