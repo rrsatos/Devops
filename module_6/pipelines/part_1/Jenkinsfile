@@ -27,10 +27,19 @@ pipeline {
             }
        }
        stage('SonarQube Analysis') {
-          def scannerHome = tool 'SonarScanner';
-          withSonarQubeEnv() {
-            sh "${scannerHome}/bin/sonar-scanner"
-          }
+            steps {
+                nodejs(nodeJSInstallationName: 'Node 12.22.3') {
+                    sh '''                    
+                     npx sonar-scanner \
+                    -Dsonar.host.url=http://vm-devops-sura-sonarqube-rrsantos-dev.westeurope.cloudapp.azure.com/ \                   
+                    -Dsonar.login=$ToA \
+                    -Dsonar.sources=./fe-devops-sura-rrsantos-dev \
+                    -Dsonar.exclusions=./fe-devops-sura-rrsantos-dev/node_modules \
+                    -Dsonar.projectName=DevOps \
+                    -Dsonar.projectKey=DevOps                    
+                    '''                
+                }
+            }
         }
         stage('Build') { 
             steps {
