@@ -4,10 +4,10 @@ const assert = require('assert')
 const capabilities = {
   'browserName': 'chrome',
   'goog:chromeOptions': {
-     'args': [ '--headless', 'window-size=1440,900']
+     'args': [ '--headless']
    }
 }
-describe('2_Mas_2', function() {
+describe('2Mas2', function() {
   this.timeout(30000)
   let driver
   let vars
@@ -18,10 +18,11 @@ describe('2_Mas_2', function() {
       .withCapabilities(capabilities)
       .setChromeOptions()
       .build()
+   })   
   afterEach(async function() {
     await driver.quit();
   })
-  it('2_Mas_2', async function() {
+  it('2Mas2', async function() {
     await driver.get("https://www.meta-calculator.com/scientific-calculator.php?panel-201-calculator")
     await driver.findElement(By.css(".col-md-6 > .calc > .mcbtn > .btn2")).click()
     await driver.findElement(By.css(".calc > .mtext > .btnPlus")).click()
