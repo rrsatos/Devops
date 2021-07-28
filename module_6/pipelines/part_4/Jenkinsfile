@@ -30,7 +30,7 @@ pipeline {
                 nodejs(nodeJSInstallationName: 'Node 12.22.3') {
                     sh '''
                     npx sonar-scanner \
-                    -Dsonar.host.url=http://vm-devops-sura-sonarqube-dgomezg3-dev.southcentralus.cloudapp.azure.com/ \
+                    -Dsonar.host.url=http://vm-devops-sura-sonarqube-rrsantos-dev.westeurope.cloudapp.azure.com/ \
                     -Dsonar.login=$ToA \
                     -Dsonar.sources=./module_6/tests \
                     -Dsonar.exclusions=./module_6/tests/node_modules \
