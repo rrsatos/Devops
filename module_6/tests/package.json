@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:mocha": "MOCHA_FILE=./results/CalculatorMochaTests.xml nyc --reporter=lcov mocha 2plus2.spec.js --reporter mocha-junit-reporter",
+    "test:mocha": "MOCHA_FILE=./results/CalculatorMochaTests.xml nyc --reporter=lcov mocha 2Mas2.spec.js --reporter mocha-junit-reporter",
     "test:jest": "jest --coverage index.spec.js"
   },
   "keywords": [],
