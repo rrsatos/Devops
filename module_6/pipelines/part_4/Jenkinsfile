@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        ToA = credentials('SonarQubeToA')
+    }
+
+    stages {
+        stage('Checkout code') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Test') { 
+            steps {
+                // 
+                echo 'Testing'
+                sh '''
+                    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                    sudo apt install -y ./google-chrome-stable_current_amd64.deb
+                '''
+                nodejs(nodeJSInstallationName: 'Node 12.22.3') {
+                    sh 'npm i --prefix module_6/tests'
+                    sh 'npm run test:jest --prefix module_6/tests'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                nodejs(nodeJSInstallationName: 'Node 12.22.3') {
+                    sh '''
+                    npx sonar-scanner \
+                    -Dsonar.host.url=http://vm-devops-sura-sonarqube-dgomezg3-dev.southcentralus.cloudapp.azure.com/ \
+                    -Dsonar.login=$ToA \
+                    -Dsonar.sources=./module_6/tests \
+                    -Dsonar.exclusions=./module_6/tests/node_modules \
+                    -Dsonar.projectName=DevOps \
+                    -Dsonar.projectKey=DevOps \
+                    -Dsonar.javascript.lcov.reportPaths=./module_6/tests/coverage/lcov.info
+                    '''
+                }
+            }
+        }
+    }
+}
